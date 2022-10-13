@@ -1,18 +1,34 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import Layout from "../../components/layout";
+import Layout from "@components/layout";
+import useMutation from "@libs/client/useMutation";
+
+interface LogoutMutationResult {
+  ok: boolean;
+}
 
 const Profile: NextPage = () => {
+  const [logout, { loading, data, error }] =
+    useMutation<LogoutMutationResult>("/api/users/logout");
+
+  const onValid = () => {
+    if (loading) return;
+    logout("");
+  };
   return (
     <Layout hasTabBar title="나의 프로필">
       <div className="px-4">
         <div className="flex items-center mt-4 space-x-3">
           <div className="w-16 h-16 bg-slate-500 rounded-full" />
           <div className="flex flex-col">
-            <span className="font-medium text-gray-900">Hamilton</span>
+            <div className="flex space-x-2">
+              <span className="font-medium text-gray-900">Hamilton</span>
+              <button onClick={onValid} className=" cursor-pointer">로그아웃</button>
+            </div>
             <Link href="/profile/edit">
               <a className="text-sm text-gray-700">프로필수정 &rarr;</a>
             </Link>
+            
           </div>
         </div>
         <div className="mt-10 flex justify-around">
