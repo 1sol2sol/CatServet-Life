@@ -3,13 +3,41 @@ import Button from "@components/button";
 import Input from "@components/input";
 import Layout from "@components/layout";
 import TextArea from "@components/textarea";
+import { useForm } from "react-hook-form";
+import useMutation from "@libs/client/useMutation";
+import { useEffect } from "react";
+import { Product } from "@prisma/client";
+import { useRouter } from "next/router";
+
+interface UploadProductForm {
+  name: string;
+  price: number;
+  description: string;
+}
+
+interface UploadProductMutation {
+  ok: boolean;
+  product: Product;
+}
 
 const Upload: NextPage = () => {
+  const router = useRouter();
+  const { register, handleSubmit } = useForm<UploadProductForm>();
+  const [uploadProduct, {loading, data}] = useMutation<UploadProductMutation>("/api/product");
+  const onValid = (data: UploadProductForm) =>{
+    if(loading) return;
+    uploadProduct(data)
+  };
+  useEffect(() => {
+    if(data?.ok){
+      router.push(`/product/${data.product.id}`)
+    }
+  },[data])
   return (
-    <Layout canGoBack >
-      <form className="p-4 space-y-4">
+    <Layout canGoBack>
+      <form className="space-y-4 p-4" onSubmit={handleSubmit(onValid)}>
         <div>
-          <label className="w-full cursor-pointer text-gray-600 hover:border-amber-500 hover:text-amber-500 flex items-center justify-center border-2 border-dashed border-gray-300 h-48 rounded-md">
+          <label className="flex h-48 w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-300 text-gray-600 hover:border-amber-500 hover:text-amber-500">
             <svg
               className="h-12 w-12"
               stroke="currentColor"
@@ -27,17 +55,27 @@ const Upload: NextPage = () => {
             <input className="hidden" type="file" />
           </label>
         </div>
-        <Input required label="글 제목" name="name" type="text" />
         <Input
+          register={register("name", { required: true })}
+          required
+          label="글 제목"
+          name="name"
+          type="text"
+        />
+        <Input
+          register={register("price", { required: true })}
           required
           label="가격"
-          placeholder="0.00"
           name="price"
           type="text"
           kind="price"
         />
-        <TextArea name="description" label="게시글 내용" />
-        <Button text="상품 올리기" />
+        <TextArea
+          register={register("description", { required: true })}
+          name="description"
+          label="게시글 내용"
+        />
+        <Button text={loading ? "Loading..." : "상품 올리기"} />
       </form>
     </Layout>
   );
