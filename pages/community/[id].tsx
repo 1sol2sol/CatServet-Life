@@ -5,11 +5,14 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { Answer, Category, Post, User } from "@prisma/client";
 import Link from "next/link";
-import useMutation from "@libs/client/useMutation";
-import { cls } from "@libs/client/utils";
+import useMutation from "@libs/client/hooks/useMutation";
+import { cls, timeForToday } from "@libs/client/utils";
+import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 
 interface AnswerWithUser extends Answer {
   user: User;
+  categories: Category
 }
 
 interface PostWithUserAndCategory extends Post {
@@ -27,12 +30,26 @@ interface CommunityPostResponse {
   isWondering: boolean;
   post: PostWithUserAndCategory;
 }
+
+interface  AnswerForm {
+  answer: String;
+}
+
+interface AnswerResponse{
+  ok: boolean;
+  response: Answer;
+}
+
 const CommunityPostDetail: NextPage = () => {
   const router = useRouter();
+  const {register, handleSubmit, reset} = useForm<AnswerForm>();
   const { data, mutate } = useSWR<CommunityPostResponse>(
     router.query.id ? `/api/posts/${router.query.id}` : null
   );
-  const [wonder] = useMutation(`/api/posts/${router.query.id}/wonder`);
+  console.log(data);
+  
+  const [wonder, {loading}] = useMutation(`/api/posts/${router.query.id}/wonder`, "POST");
+  const [sendAnswer, {data: answerData, loading: answerLoading}] = useMutation<AnswerResponse>(`/api/posts/${router.query.id}/answers`, "POST")
   const onWonderClick = () => {
     if(!data) return;
     mutate({
@@ -46,10 +63,22 @@ const CommunityPostDetail: NextPage = () => {
       },
       isWondering:!data.isWondering,
     }, false);
-    wonder({})
+    if(!loading){
+      wonder({})
+    }
   };
+  const onValid = (form: AnswerForm) => {
+    if(answerLoading) return;
+    sendAnswer(form);
+  }
+  useEffect(() => {
+    if(answerData && answerData.ok){
+      reset();
+      mutate();
+    }
+  },[answerData,reset,mutate])
   return (
-    <Layout canGoBack>
+    <Layout canGoBack hasTabBar>
       <div>
         <span className="my-3 ml-4 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
           {data?.post?.categories.name}
@@ -91,7 +120,7 @@ const CommunityPostDetail: NextPage = () => {
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 ></path>
               </svg>
-              <span>궁금해요 {data?.post?._count?.wonderings}</span>
+              <span>관심 {data?.post?._count?.wonderings}</span>
             </button>
             <span className="flex items-center space-x-2 text-sm">
               <svg
@@ -121,23 +150,24 @@ const CommunityPostDetail: NextPage = () => {
                   {answer.user.nickname}
                 </span>
                 <span className="block text-xs text-gray-500 ">
-                  {String(answer.created)}
+                  {timeForToday(answer.created)}
                 </span>
                 <p className="mt-2 text-gray-700">{answer.answer}</p>
               </div>
             </div>
           ))}
         </div>
-        <div className="px-4">
+        <form className="px-4" onSubmit={handleSubmit(onValid)} >
           <TextArea
+            register={register("answer", {required: true, minLength: 5})}
             name="description"
-            placeholder="이 글에 답변을 달아보세요!"
+            placeholder="이 글에 댓글을 달아보세요!"
             required
           />
           <button className="mt-2 w-full rounded-md border border-transparent bg-amber-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ">
-            Reply
+            {answerLoading ? "Loading..." : "확인"}
           </button>
-        </div>
+        </form>
       </div>
     </Layout>
   );
