@@ -5,9 +5,10 @@ import { useRouter } from "next/router";
 import useSWR, { useSWRConfig } from "swr";
 import Link from "next/link";
 import { Product, User } from "@prisma/client";
-import useUser from "@libs/client/useUser";
-import useMutation from "@libs/client/useMutation";
+import useUser from "@libs/client/hooks/useUser";
+import useMutation from "@libs/client/hooks/useMutation";
 import { cls } from "@libs/client/utils";
+import Image from "next/image";
 
 interface ProductWithUser extends Product {
   user: User;
@@ -18,82 +19,109 @@ interface ItemDetailResponse {
   product: ProductWithUser;
   relatedProducts: Product[];
   isLiked: boolean;
-
 }
 
 const ItemDetail: NextPage = () => {
   const router = useRouter();
-  const {user, isLoading } = useUser();  
-  const {mutate} = useSWRConfig();
+  const { user, isLoading } = useUser();
+  const { mutate } = useSWRConfig();
 
-  const {data, mutate: boundMutate} = useSWR<ItemDetailResponse>(router.query.id ? `/api/product/${router.query.id}` : null)
-  const [toggleFav] = useMutation(`/api/product/${router.query.id}/fav`)
+  const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
+    router.query.id ? `/api/product/${router.query.id}` : null
+  );
+  const [toggleFav] = useMutation(
+    `/api/product/${router.query.id}/fav`,
+    "POST"
+  );
   const onFavClick = () => {
-    if(!data) return;
-    boundMutate({...data, isLiked: !data.isLiked}, false);
+    if (!data) return;
+    boundMutate({ ...data, isLiked: !data.isLiked }, false);
     toggleFav({});
-  }
+  };
   return (
     <Layout title="" canGoBack>
       <div className="px-4  py-4">
         <div className="mb-8">
-          <div className="h-96 bg-slate-300" />
+          <div className="relative pb-80">
+            <Image
+              src={`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${data?.product?.image}/public`}
+              className=" bg-slate-300 object-center"
+              layout="fill"
+              alt="상품사진"
+            />
+          </div>
+        
           <div className="flex cursor-pointer items-center space-x-3 border-t border-b py-3">
-            <div className="h-12 w-12 rounded-full bg-slate-300" />
+            <Image
+              width={48}
+              height={48}
+              alt="프로필사진"
+              src={`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${data?.product?.user?.avatar}/avatar`}
+              className="h-12 w-12 rounded-full bg-slate-300"
+            />
             <div>
-              <p className="text-sm font-medium text-gray-700">{data?.product?.user?.nickname}</p>
+              <p className="text-sm font-medium text-gray-700">
+                {data?.product?.user?.nickname}
+              </p>
               <Link href={`/users/profile/${data?.product?.user?.id}`}>
                 <a className="text-xs font-medium text-gray-500">
                   View profile &rarr;
                 </a>
               </Link>
-              {data?.product.user.id  === user?.id ? <button>삭제</button> : null }
+              {data?.product.user.id === user?.id ? (
+                <button>삭제</button>
+              ) : null}
             </div>
           </div>
           <div className="mt-5">
-            <h1 className="text-3xl font-bold text-gray-900">{data?.product?.name}</h1>
-            <span className="mt-3 block text-2xl text-gray-900">₩{data?.product?.price}</span>
-            <p className=" my-6 text-gray-700">
-              {data?.product?.description}
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {data?.product?.name}
+            </h1>
+            <span className="mt-3 block text-2xl text-gray-900">
+              ₩{data?.product?.price}
+            </span>
+            <p className=" my-6 text-gray-700">{data?.product?.description}</p>
             <div className="flex items-center justify-between space-x-2">
               <Button text="판매자에게 연락하기" />
-              <button onClick={onFavClick} className={cls(
-                    "p-3 rounded-md flex items-center justify-center hover:bg-gray-100",
-                    data?.isLiked
-                      ? "text-amber-600 hover:text-amber-700"
-                      : "text-gray-400  hover:text-gray-500"
-                  )}>
+              <button
+                onClick={onFavClick}
+                className={cls(
+                  "flex items-center justify-center rounded-md p-3 hover:bg-gray-100",
+                  data?.isLiked
+                    ? "text-amber-600 hover:text-amber-700"
+                    : "text-gray-400  hover:text-gray-500"
+                )}
+              >
                 {data?.isLiked ? (
-                    <svg
-                      className="w-6 h-6"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
-                  ) : (
-                    <svg
-                      className="h-6 w-6 "
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                      />
-                    </svg>
-                  )}
+                  <svg
+                    className="h-6 w-6"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                      clipRule="evenodd"
+                    ></path>
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-6 w-6 "
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
           </div>
@@ -101,19 +129,21 @@ const ItemDetail: NextPage = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">비슷한 상품</h2>
           <Link
-              href={`/product/${data?.relatedProducts?.map(
-                (product) => product.id
-              )}`}
-            >
-          <div className=" mt-6 grid grid-cols-2 gap-4 cursor-pointer">
-            {data?.relatedProducts?.map((product) => (
-              <div key={product.id}>
-                <div className="mb-4 h-56 w-full bg-slate-300" />
-                <h3 className="-mb-1 text-gray-700">{product.name}</h3>
-                <span className="text-sm font-medium text-gray-900">₩{product.price}</span>
-              </div>
-            ))}
-          </div>
+            href={`/product/${data?.relatedProducts?.map(
+              (product) => product.id
+            )}`}
+          >
+            <div className=" mt-6 grid cursor-pointer grid-cols-2 gap-4">
+              {data?.relatedProducts?.map((product) => (
+                <div key={product.id}>
+                  <div className="mb-4 h-56 w-full bg-slate-300" />
+                  <h3 className="-mb-1 text-gray-700">{product.name}</h3>
+                  <span className="text-sm font-medium text-gray-900">
+                    ₩{product.price}
+                  </span>
+                </div>
+              ))}
+            </div>
           </Link>
         </div>
       </div>
