@@ -29,7 +29,9 @@ export default function Layout({
   const onHomeClick = () => {
     router.push("/")
   }
-
+  const onSearchClick = () => {
+    router.push("/search/")
+  }
   return (
     <div>
       <div className="fixed top-0 flex h-12 w-full max-w-xl items-center justify-center  border-b bg-white px-5 text-lg  font-medium text-gray-800">
@@ -60,9 +62,9 @@ export default function Layout({
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                 ></path>
               </svg>
@@ -96,10 +98,15 @@ export default function Layout({
             <Image src="/cat-logo.svg" width={30} height={30}  alt="catLogo"/>
             <span className="font-semibold">집사생활</span>
           </div>
-          <button className="flex focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 items-center rounded-full px-2 hover:bg-amber-500">
+          <button className="flex focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 items-center rounded-full px-2 hover:bg-amber-500" onClick={onSearchClick}>
             <svg aria-hidden="true" className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </button>
         </div>
+        ) : null}
+        {title && !canGoBack ? (
+          <div className="flex items-center">
+            <span className={cls(canGoBack ? "mx-auto" : "", "")}>{title}</span>
+          </div>
         ) : null}
 
       </div>
@@ -160,7 +167,7 @@ export default function Layout({
               <span>커뮤니티</span>
             </a>
           </Link>
-          <Link href="/live">
+          <Link href="/hospital">
             <a
               className={cls(
                 "flex flex-col items-center space-y-2 ",
