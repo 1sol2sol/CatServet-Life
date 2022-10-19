@@ -1,42 +1,79 @@
 import type { NextPage } from "next";
 import Link from "next/link";
 import Layout from "@components/layout";
-import useMutation from "@libs/client/useMutation";
+import useMutation from "@libs/client/hooks/useMutation";
+import useUser from "@libs/client/hooks/useUser";
+import useSWR from "swr";
+import { Review, User } from "@prisma/client";
+import { cls } from "@libs/client/utils";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import Image from "next/image";
 
 interface LogoutMutationResult {
   ok: boolean;
 }
 
+interface ReviewWithUser extends Review {
+  createdBy: User;
+}
+interface ReviewsResopnse {
+  ok: boolean;
+  reviews: ReviewWithUser[];
+}
+
 const Profile: NextPage = () => {
-  const [logout, { loading, data, error }] =
-    useMutation<LogoutMutationResult>("/api/users/logout");
+  const router = useRouter();
+  const { user } = useUser();
+  const { data } = useSWR<ReviewsResopnse>(`/api/reviews`);
+  const [logout, { loading, data: logoutData }] =
+    useMutation<LogoutMutationResult>("/api/users/logout", "POST");
 
   const onValid = () => {
     if (loading) return;
     logout("");
   };
+  useEffect(() => {
+    if (logoutData?.ok) {
+      router.push("/login");
+    }
+  }, [logoutData, router]);
+
   return (
     <Layout hasTabBar title="나의 프로필">
       <div className="px-4">
-        <div className="flex items-center mt-4 space-x-3">
-          <div className="w-16 h-16 bg-slate-500 rounded-full" />
+        <div className="mt-4 flex items-center space-x-3">
+          {user?.avatar ? (
+            <Image
+              width={64}
+              height={64}
+              src={`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${user?.avatar}/avatar`}
+              className="h-16 w-16 rounded-full bg-slate-500"
+              alt="프로필사진"
+            />
+          ) : (
+            <div className="h-16 w-16 rounded-full bg-slate-500" />
+          )}{" "}
           <div className="flex flex-col">
             <div className="flex space-x-2">
-              <span className="font-medium text-gray-900">Hamilton</span>
-              <button onClick={onValid} className=" cursor-pointer">로그아웃</button>
+              <span className="font-medium text-gray-900">
+                {user?.nickname}
+              </span>
+              <button onClick={onValid} className=" cursor-pointer">
+                로그아웃
+              </button>
             </div>
             <Link href="/profile/edit">
               <a className="text-sm text-gray-700">프로필수정 &rarr;</a>
             </Link>
-            
           </div>
         </div>
         <div className="mt-10 flex justify-around">
           <Link href="/profile/sold">
             <a className="flex flex-col items-center">
-              <div className="w-14 h-14 text-white bg-amber-400 rounded-full flex items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-400 text-white">
                 <svg
-                  className="w-6 h-6"
+                  className="h-6 w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -50,16 +87,16 @@ const Profile: NextPage = () => {
                   ></path>
                 </svg>
               </div>
-              <span className="text-sm mt-2 font-medium text-gray-700">
+              <span className="mt-2 text-sm font-medium text-gray-700">
                 판매내역
               </span>
             </a>
           </Link>
           <Link href="/profile/bought">
             <a className="flex flex-col items-center">
-              <div className="w-14 h-14 text-white bg-amber-400 rounded-full flex items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-400 text-white">
                 <svg
-                  className="w-6 h-6"
+                  className="h-6 w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -73,16 +110,16 @@ const Profile: NextPage = () => {
                   ></path>
                 </svg>
               </div>
-              <span className="text-sm mt-2 font-medium text-gray-700">
+              <span className="mt-2 text-sm font-medium text-gray-700">
                 구매내역
               </span>
             </a>
           </Link>
           <Link href="/profile/loved">
             <a className="flex flex-col items-center">
-              <div className="w-14 h-14 text-white bg-amber-400 rounded-full flex items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-400 text-white">
                 <svg
-                  className="w-6 h-6"
+                  className="h-6 w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -96,72 +133,46 @@ const Profile: NextPage = () => {
                   ></path>
                 </svg>
               </div>
-              <span className="text-sm mt-2 font-medium text-gray-700">
+              <span className="mt-2 text-sm font-medium text-gray-700">
                 관심목록
               </span>
             </a>
           </Link>
         </div>
-        <div className="mt-12">
-          <div className="flex space-x-4 items-center">
-            <div className="w-12 h-12 rounded-full bg-slate-500" />
-            <div>
-              <h4 className="text-sm font-bold text-gray-800">Daniel</h4>
-              <div className="flex items-center">
-                <svg
-                  className="text-amber-500 h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                <svg
-                  className="text-amber-500 h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                <svg
-                  className="text-amber-500 h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                <svg
-                  className="text-amber-500 h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                <svg
-                  className="text-gray-400 h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
+        {data?.reviews.map((review) => (
+          <div key={review.id} className="mt-12">
+            <div className="flex items-center space-x-4">
+              <div className="h-12 w-12 rounded-full bg-slate-500" />
+              <div>
+                <h4 className="text-sm font-bold text-gray-800">
+                  {review.createdBy.nickname}
+                </h4>
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                      key={star}
+                      className={cls(
+                        "h-5 w-5",
+                        review.score >= star
+                          ? "text-yellow-400"
+                          : "text-gray-400"
+                      )}
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
               </div>
             </div>
+            <div className="mt-4 text-sm text-gray-600">
+              <p>{review.review}</p>
+            </div>
           </div>
-          <div className="mt-4 text-gray-600 text-sm">
-            <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consequatur repellendus ex ipsum deleniti asperiores earum illo rerum reprehenderit dignissimos et quod, possimus eos, ratione quos accusamus blanditiis id? Soluta a ut nesciunt obcaecati alias neque mollitia nobis deleniti, dolorum, itaque corporis similique error corrupti magni, assumenda repellat. Ipsam, ut ratione.
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </Layout>
   );
