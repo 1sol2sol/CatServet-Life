@@ -11,6 +11,7 @@ import Loading from '@components/loading';
 export interface ProductWithCount extends Product {
   _count: {
     favs: number;
+    chatRooms: number;
   };
 }
 
@@ -32,7 +33,7 @@ const Home: NextPage = () => {
             key={product.id}
             title={product.name}
             price={product.price}
-            comments={1}
+            comments={product._count.chatRooms}
             image={product.image}
             hearts={product._count.favs}
           />
