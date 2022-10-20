@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import Button from "@components/button";
 import Input from "@components/input";
-import useMutation from "@libs/client/useMutation";
+import useMutation from "@libs/client/hooks/useMutation";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
@@ -24,9 +24,9 @@ interface MutationResult {
 const Login: NextPage = () => {
   const { register, handleSubmit } = useForm<LoginForm>();
   const [login, { loading, data, error }] =
-    useMutation<LoginMutationResult>("/api/users/login");
+    useMutation<LoginMutationResult>("/api/users/login", "POST");
   const [confirmToken, { loading:tokenLoading, data:tokenData}] =
-  useMutation<MutationResult>("/api/users/confirm");
+  useMutation<MutationResult>("/api/users/confirm", "POST");
   const {register:tokenRegister, handleSubmit:tokenHandleSubmit} = useForm<TokenForm>();
 
   const onValid = (validForm: LoginForm) => {
@@ -47,7 +47,7 @@ const Login: NextPage = () => {
 
   return (
     <div className="mt-32 px-4">
-      <h3 className="text-center text-2xl font-semibold">
+      <h3 className="text-center text-2xl font-semibold text-yellow-900">
         핸드폰 번호로 로그인해주세요.
       </h3>
       <div className="mt-10">
