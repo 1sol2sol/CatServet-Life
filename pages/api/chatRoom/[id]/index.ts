@@ -1,0 +1,55 @@
+import client from "@libs/server/client";
+import withHandler, { ResponseType } from "@libs/server/withHandler";
+import { NextApiRequest, NextApiResponse } from "next";
+import { withApiSession } from "@libs/server/withSession";
+import chatRoom from "..";
+
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseType>
+) {
+  const {
+    query: { id },
+    session: { user },
+  } = req;
+
+  const chatRoom = await client.chatRoom.findUnique({
+    where: {
+      id: Number(id),
+    },
+    include: {
+      buyer: true,
+      seller: true,
+      messages: {
+        select: {
+          id: true,
+          message: true,
+          user: true,
+        },
+      },
+    },
+  });
+
+  const product = await client.product.findUnique({
+    where: {
+      id: chatRoom?.productId,
+    },
+  });
+
+  if (chatRoom?.buyer?.id === user?.id || chatRoom?.seller?.id === user?.id) {
+    res.json({
+      ok: true,
+      chatRoom,
+      product,
+    });
+  } else {
+    res.json({ ok: false });
+  }
+}
+
+export default withApiSession(
+  withHandler({
+    methods: ["GET"],
+    handler,
+  })
+);
