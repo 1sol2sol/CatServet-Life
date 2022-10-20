@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
 
-
 interface ProductsResponse {
   ok: boolean;
   result: Product[];

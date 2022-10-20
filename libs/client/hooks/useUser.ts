@@ -10,11 +10,14 @@ interface profileResponse {
 
 export default function useUser(){
   const {data, error} = useSWR<profileResponse>("/api/users/me")
+  console.log(data);
+  
   const router = useRouter();
   useEffect(() => {
-    if(data && !data.ok && router.pathname !== "/enter" && router.pathname !== "/login"){
+    if(data && !data.ok && router.pathname !== `/enter` && router.pathname !== `/login`){
       router.replace("/enter");
     }
+    
   }, [data, router])
 
   return {user: data?.profile, isLoading: !data && !error};
