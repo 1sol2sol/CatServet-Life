@@ -32,7 +32,7 @@ export default function Input({
             required={required}
             {...register}
             type={type}
-            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-900 focus:border-yellow-900"
           />
         </div>
       ) : null}
@@ -46,7 +46,7 @@ export default function Input({
             {...register}
             required={required}
             type={type}
-            className="appearance-none pl-7 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+            className="appearance-none pl-7 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-800 focus:border-yellow-800"
           />
           <div className="absolute right-0 pointer-events-none pr-3 flex items-center">
             <span className="text-gray-500">KRW</span>
@@ -63,7 +63,7 @@ export default function Input({
             required={required}
             {...register}
             type={type}
-            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md rounded-l-none shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+            className="appearance-none w-full px-3 py-2 border border-gray-300 rounded-md rounded-l-none shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-800 focus:border-yellow-800"
           />
         </div>
       ) : null}

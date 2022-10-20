@@ -34,7 +34,7 @@ export default function Layout({
   }
   return (
     <div>
-      <div className="fixed top-0 flex h-12 w-full max-w-xl items-center justify-center  border-b bg-white px-5 text-lg  font-medium text-gray-800">
+      <div className="fixed top-0 flex h-12 w-full max-w-xl items-center justify-center  border-b bg-white px-5 text-lg  font-medium text-yellow-900">
         {canGoBack && !title ? (
           <div className="flex w-full space-x-2">
             <button onClick={onClick} >
@@ -94,12 +94,11 @@ export default function Layout({
         ) : null}
         {logo ? (
           <div className="flex w-full justify-between">
-          <div className="flex items-center space-x-2">
-            <Image src="/cat-logo.svg" width={30} height={30}  alt="catLogo"/>
-            <span className="font-semibold">집사생활</span>
+          <div className="flex items-center">
+            <Image src="/cat-servant.png" width={100} height={35}  alt="catLogo"/>
           </div>
-          <button className="flex focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 items-center rounded-full px-2 hover:bg-amber-500" onClick={onSearchClick}>
-            <svg aria-hidden="true" className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <button className="flex focus:ring-2 focus:ring-offset-2 focus:ring-yellow-800 items-center rounded-full px-2 hover:bg-yellow-700" onClick={onSearchClick}>
+            <svg aria-hidden="true" className="w-5 h-5 text-yellow-900 hover:text-white dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           </button>
         </div>
         ) : null}
@@ -118,7 +117,7 @@ export default function Layout({
               className={cls(
                 "flex flex-col items-center space-y-2 ",
                 router.pathname === "/"
-                  ? "text-amber-500"
+                  ? "text-yellow-800"
                   : "transition-colors hover:text-gray-500"
               )}
             >
@@ -145,7 +144,7 @@ export default function Layout({
               className={cls(
                 "flex flex-col items-center space-y-2 ",
                 router.pathname === "/community"
-                  ? "text-amber-500"
+                  ? "text-yellow-800"
                   : "transition-colors hover:text-gray-500"
               )}
             >
@@ -172,7 +171,7 @@ export default function Layout({
               className={cls(
                 "flex flex-col items-center space-y-2 ",
                 router.pathname === "/live"
-                  ? "text-amber-500"
+                  ? "text-yellow-800"
                   : "transition-colors hover:text-gray-500"
               )}
             >
@@ -186,7 +185,7 @@ export default function Layout({
               className={cls(
                 "flex flex-col items-center space-y-2 ",
                 router.pathname === "/chats"
-                  ? "text-amber-500"
+                  ? "text-yellow-800"
                   : "transition-colors hover:text-gray-500"
               )}
             >
@@ -213,7 +212,7 @@ export default function Layout({
               className={cls(
                 "flex flex-col items-center space-y-2 ",
                 router.pathname === "/profile"
-                  ? "text-amber-500"
+                  ? "text-yellow-800"
                   : "transition-colors hover:text-gray-500"
               )}
             >

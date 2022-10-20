@@ -93,7 +93,7 @@ const EditProfile: NextPage = () => {
           type="text"
         />
         {errors.formErrors ? (
-          <span className="my-1 text-amber-600 font-medium block text-center text-sm">
+          <span className="my-1 text-yellow-800 font-medium block text-center text-sm">
             {errors.formErrors.message}
           </span>
         ) : null}

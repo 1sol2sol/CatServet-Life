@@ -36,11 +36,11 @@ const Community: NextPage = () => {
         { data ? data?.posts?.map((post) => (
           <Link key={post.id} href={`/community/${post.id}`}>
             <a className="flex cursor-pointer flex-col pt-4 items-start">
-              <span className="flex ml-4 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              <span className="flex ml-4 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-700 text-white">
                 {post.categories.name}
               </span>
               <div className="mt-2 px-4 text-gray-700">
-                <span className="text-amber-500 font-medium">Q.</span> 
+                <span className="text-amber-800 font-medium">Q.</span> 
                 {post.question}
               </div>
               <div className="mt-5 px-4 flex items-center justify-between w-full text-gray-500 font-medium text-xs">

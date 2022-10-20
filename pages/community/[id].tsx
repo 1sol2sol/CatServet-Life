@@ -98,13 +98,13 @@ const CommunityPostDetail: NextPage = () => {
         </div>
         <div>
           <div className="mt-2 px-4 text-gray-700">
-            <span className="font-medium text-amber-500">Q.</span>
+            <span className="font-medium text-yellow-700">Q.</span>
             {data?.post?.question}
           </div>
           <div className="mt-3 flex w-full space-x-5 border-t border-b-[2px] px-4 py-2.5  text-gray-700">
             <button
               onClick={onWonderClick}
-              className={cls("flex space-x-2 items-center text-sm", data?.isWondering ? "text-amber-700" : "")}
+              className={cls("flex space-x-2 items-center text-sm", data?.isWondering ? "text-yellow-700" : "")}
             >
               <svg
                 className="h-4 w-4"
@@ -164,7 +164,7 @@ const CommunityPostDetail: NextPage = () => {
             placeholder="이 글에 댓글을 달아보세요!"
             required
           />
-          <button className="mt-2 w-full rounded-md border border-transparent bg-amber-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ">
+          <button className="mt-2 w-full rounded-md border border-transparent bg-yellow-800 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-800 focus:ring-offset-2 ">
             {answerLoading ? "Loading..." : "확인"}
           </button>
         </form>

@@ -40,7 +40,7 @@ const Write: NextPage = () => {
         <select
           {...register("category", {required: true})}
           id="categories"
-          className="block w-full rounded-md border border-gray-300 focus:ring-amber-500 focus:border-amber-500 p-2.5 text-sm text-gray-900   dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-amber-500 dark:focus:ring-amber-500"
+          className="block w-full rounded-md border border-gray-300 focus:ring-yellow-800 focus:border-yellow-800 p-2.5 text-sm text-gray-900 "
         >
           <option selected>게시글의 주제를 선택해주세요.</option>
           <option value="집사잡담">집사잡담</option>
