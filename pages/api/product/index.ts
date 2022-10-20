@@ -13,6 +13,7 @@ async function handler(
         _count: {
           select: {
             favs: true,
+            chatRooms: true,
           }
         }
       }
