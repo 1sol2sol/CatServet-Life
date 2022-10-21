@@ -24,6 +24,15 @@ async function handler(
           avatar: true,
         },
       },
+      chatRooms: {
+        orderBy: {
+          updatedAt: "desc",
+        },
+        include: {
+          buyer: true,
+          messages: true,
+        },
+      },
     },
   });
   if (req.method === "GET") {
