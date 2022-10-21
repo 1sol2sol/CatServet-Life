@@ -6,6 +6,7 @@ import Input from "@components/input";
 import useMutation from "@libs/client/hooks/useMutation";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import useCoords from "@libs/client/hooks/useCoords";
 
 interface LoginForm {
   phone: string;
@@ -22,6 +23,9 @@ interface MutationResult {
 }
 
 const Login: NextPage = () => {
+  const {latitude, longitude} = useCoords();
+  console.log(latitude, longitude);
+  
   const { register, handleSubmit } = useForm<LoginForm>();
   const [login, { loading, data, error }] =
     useMutation<LoginMutationResult>("/api/users/login", "POST");
@@ -31,7 +35,7 @@ const Login: NextPage = () => {
 
   const onValid = (validForm: LoginForm) => {
     if (loading) return;
-    login(validForm);
+    login({...validForm, latitude, longitude});   
   };
   const onTokenValid = (validForm: TokenForm) => {
     if(tokenLoading) return;
@@ -41,7 +45,7 @@ const Login: NextPage = () => {
   const router = useRouter();
   useEffect(() => {
     if(tokenData?.ok){
-      router.push("/")
+      router.replace("/")
     }
   },[tokenData, router])
 
