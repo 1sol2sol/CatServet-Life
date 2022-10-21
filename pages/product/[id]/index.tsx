@@ -7,10 +7,10 @@ import Link from "next/link";
 import { ChatRoom, Product, User } from "@prisma/client";
 import useUser from "@libs/client/hooks/useUser";
 import useMutation from "@libs/client/hooks/useMutation";
-import { cls } from "@libs/client/utils";
+import { cls, timeForToday } from "@libs/client/utils";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface ProductWithUser extends Product {
   user: User;
@@ -31,19 +31,22 @@ interface MessageResponse {
 
 const ItemDetail: NextPage = () => {
   const router = useRouter();
-  const { user, isLoading } = useUser();
-  const { mutate } = useSWRConfig();
+  const { id } = router.query;
+  const { user } = useUser();
   const { handleSubmit } = useForm();
-
+  const [state, setState] = useState<"판매중" | "판매완료">("판매중");
   const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
-    router.query.id ? `/api/product/${router.query.id}` : null
+    id ? `/api/product/${id}` : null
   );
   const [toggleFav] = useMutation(
-    `/api/product/${router.query.id}/fav`,
+    `/api/product/${id}/fav`,
     "POST"
   );
-  const [deleteProduct] = useMutation(`/api/product/${router.query.id}`, "DELETE");
- 
+  const [deleteProduct] = useMutation(
+    `/api/product/${id}`,
+    "DELETE"
+  );
+
   const onFavClick = () => {
     if (!data) return;
     boundMutate({ ...data, isLiked: !data.isLiked }, false);
@@ -54,15 +57,24 @@ const ItemDetail: NextPage = () => {
     "/api/chatRoom",
     "POST"
   );
-
   const onVaild = () => {
-    send(router.query.id); 
+    send(id);
   };
+
+  const handleChange = (e: any) => {
+    setState(e.target.value);
+  };
+
+  useEffect(() => {
+    if (state === "판매완료") {
+      router.push(`/product/${id}/soldout`);
+    }
+  }, [state, router, id]);
 
   const onDelete = () => {
     deleteProduct("");
     router.push("/profile");
-  }
+  };
   useEffect(() => {
     if (chatRoomData && chatRoomData?.chatRoom) {
       router.push(`/chats/${chatRoomData.chatRoom?.id}`);
@@ -83,48 +95,52 @@ const ItemDetail: NextPage = () => {
               alt="상품사진"
             />
           </div>
-
-          <div className="flex cursor-pointer items-center space-x-3 border-t border-b py-3">
-            <Image
-              width={48}
-              height={48}
-              alt="프로필사진"
-              src={`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${data?.product?.user?.avatar}/avatar`}
-              className="h-12 w-12 rounded-full bg-slate-300"
-            />
-            <div className="pr-36">
-              <p className="text-sm font-medium text-gray-700">
-                {data?.product?.user?.nickname}
-              </p>
-              <Link href={`/users/profile/${data?.product?.user?.id}`}>
-                <a className="text-xs font-medium text-gray-500">
-                  View profile &rarr;
-                </a>
-              </Link>
+          <div className="flex justify-between border-b ">
+            <div className="flex cursor-pointer items-center space-x-3 border-t py-3">
+              <Image
+                width={48}
+                height={48}
+                alt="프로필사진"
+                src={`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${data?.product?.user?.avatar}/avatar`}
+                className="h-12 w-12 rounded-full bg-slate-300"
+              />
+              <div >
+                <p className="text-sm font-medium text-gray-700">
+                  {data?.product?.user?.nickname}
+                </p>
+                <Link href={`/users/profile/${data?.product?.user?.id}`}>
+                  <a className="text-xs font-medium text-gray-500">
+                    View profile &rarr;
+                  </a>
+                </Link>
+                
+              </div>
             </div>
-            {user?.id === data?.product?.user?.id ? 
-            (
-              <div className="flex w-36 space-x-2 mt-5">
-                  <button
-                  onClick={onDelete}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-yellow-800 focus:border-yellow-800 block w-1/2"
-                  >
-                    삭제
-                  </button>
-                  <select
-                    
-                    className="appearance-none bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-yellow-800 focus:border-yellow-800 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-yellow-800 dark:focus:border-yellow-800"
-                  >
+            <div>
+              {user?.id === data?.product?.user?.id ? (
+                <div className="mt-5 flex w-36 space-x-2">
+                  <select onChange={handleChange} value={state} className="block w-full appearance-none rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-yellow-800 focus:ring-yellow-800 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-yellow-800 dark:focus:ring-yellow-800">
                     <option value={"판매중"}>판매중</option>
                     <option value={"판매완료"}>판매완료</option>
                   </select>
+                  <button
+                    onClick={onDelete}
+                    className="block w-1/2 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:border-yellow-800 focus:ring-yellow-800"
+                  >
+                    삭제
+                  </button>
                 </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
+
           <div className="mt-5">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 inline-block mr-2">
               {data?.product?.name}
             </h1>
+            <span className="text-xs font-medium text-gray-500">
+                  {timeForToday(data?.product?.created)}
+            </span>
             <span className="mt-3 block text-2xl text-gray-900">
               ₩{data?.product?.price}
             </span>
@@ -181,7 +197,9 @@ const ItemDetail: NextPage = () => {
           </div>
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-800">이런 상품은 어때요?</h2>
+          <h2 className="text-xl font-bold text-gray-800">
+            이런 상품은 어때요?
+          </h2>
           <Link
             href={`/product/${data?.relatedProducts?.map(
               (product) => product.id
