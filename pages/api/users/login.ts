@@ -9,7 +9,8 @@ async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>,
 ) {
-  const{phone} = req.body;
+  const{phone, latitude, longitude} = req.body;
+  
   const randomName = Math.random().toString(16).substr(2, 8);
   const payload = Math.floor(100000 + Math.random() * 900000) + "";
   const token = await client.token.create({
@@ -23,6 +24,8 @@ async function handler(
           create:{
             nickname: randomName,
             phone: phone,
+            latitude: latitude,
+            longitude: longitude,
           }
         }
       }
