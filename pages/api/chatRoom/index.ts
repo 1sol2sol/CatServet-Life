@@ -2,6 +2,7 @@ import client from "@libs/server/client";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
 import { NextApiRequest, NextApiResponse } from "next";
 import { withApiSession } from "@libs/server/withSession";
+import Id from "./[id]";
 
 async function handler(
   req: NextApiRequest,
@@ -23,15 +24,24 @@ async function handler(
         },
       },
     },
-  });
-
+  });  
   
   if(req.method === "GET"){
     const chatRooms = await client.chatRoom.findMany({
+      where: {
+        OR: [
+          {
+            buyerId: user?.id
+          },
+          {
+            sellerId: user?.id
+          }
+        ]
+      },
       include: {
         messages: {
           orderBy: {
-            updatedAt: "desc"
+            createdAt: "desc"
           }
         },
         buyer: true,
