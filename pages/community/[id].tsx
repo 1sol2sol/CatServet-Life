@@ -80,7 +80,7 @@ const CommunityPostDetail: NextPage = () => {
   return (
     <Layout canGoBack hasTabBar>
       <div>
-        <span className="my-3 ml-4 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+        <span className="my-3 ml-4 inline-flex items-center rounded-full bg-yellow-700 px-2.5 py-0.5 text-xs font-medium text-white">
           {data?.post?.categories.name}
         </span>
         <div className="mb-3 flex cursor-pointer items-center space-x-3  border-b px-4 pb-3">
