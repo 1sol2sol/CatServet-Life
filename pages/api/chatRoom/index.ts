@@ -28,6 +28,9 @@ async function handler(
   
   if(req.method === "GET"){
     const chatRooms = await client.chatRoom.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
       where: {
         OR: [
           {

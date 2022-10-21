@@ -12,6 +12,9 @@ async function handler(
     where: {
       createdForId: user?.id,
     },
+    orderBy: { 
+      createdAt: "desc"
+    },
     include: {
       createdBy: {
         select: {

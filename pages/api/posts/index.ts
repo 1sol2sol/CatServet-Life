@@ -44,6 +44,9 @@ async function handler(
     const parsedLongitude = parseFloat(longitude!.toString());
 
     const posts = await client.post.findMany({
+      orderBy: {
+        created: "desc",
+      },
       include: {
         user: {
           select: {
