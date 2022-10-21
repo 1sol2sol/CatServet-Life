@@ -106,7 +106,7 @@ const EditProfile: NextPage = () => {
         ) : null}
         <div>
         <span className="font-medium text-gray-700 text-sm">동네 설정하기</span>
-        <input className="w-full accent-yellow-800 cursor-pointer ap rounded-lg bg-gray-100 outline-none " {...register("range")} type="range"  min="0.01" max="0.06" step="0.01" />
+        <input className="w-full accent-yellow-800 cursor-pointer ap rounded-lg bg-gray-100 outline-none " {...register("range")} type="range"  min="0.02" max="1" step="0.02" />
         </div>
         <Button text={loading ? "Loading..." : "프로필 업데이트"} />
       </form>

@@ -26,11 +26,17 @@ interface PostsResponse {
 }
 const Community: NextPage = () => {
   const {user} = useUser();  
-  const {data} = useSWR<PostsResponse>(user?.latitude && user?.longitude ? `/api/posts?latitude=${user?.latitude}&longitude=${user?.longitude}` : null);  
+  const {data} = useSWR<PostsResponse>(user?.latitude && user?.longitude ? `/api/posts?latitude=${user?.latitude}&longitude=${user?.longitude}&range=${user?.range}` : null);  
+  console.log(data);
   
   return (
     <Layout hasTabBar logo >
       <div className="space-y-4 divide-y-[2px]">
+        {data?.posts.length === 0 ? (
+          <div className="w-full flex justify-center mt-80">
+            <span className="text-yellow-900 font-semibold text-xl">아직 주변의 글이 없어요 😢 😢 </span>
+          </div>
+        ) : ""}
         { data ? data?.posts?.map((post) => (
           <Link key={post.id} href={`/community/${post.id}`}>
             <a className="flex cursor-pointer flex-col pt-4 items-start">
