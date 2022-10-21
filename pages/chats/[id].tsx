@@ -74,7 +74,7 @@ const ChatDetail: NextPage = () => {
     send(form);
   };
   return (
-    <Layout canGoBack title={data?.chatRoom.seller.nickname}>
+    <Layout canGoBack title={data?.chatRoom?.sellerId === user?.id ? data?.chatRoom.buyer.nickname : data?.chatRoom.seller.nickname}>
       <div className="space-y-4 py-10 px-4 pb-16">
         {data?.chatRoom?.messages.map((message) => (
           <Message

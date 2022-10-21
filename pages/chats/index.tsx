@@ -22,23 +22,24 @@ interface ChatRoomResponse {
 const Chats: NextPage = () => {
   const {data} = useSWR<ChatRoomResponse>(`/api/chatRoom`);
   console.log(data);
+  const {user} = useUser();
   
   return (
     <Layout hasTabBar title="채팅">
       <div className="divide-y-[1px] ">
-        {data?.chatRooms?.map((chatroom: any) => (
+        {data?.chatRooms?.map((chatroom: any) =>  ( 
           <Link href={`/chats/${chatroom.id}`} key={chatroom.id}>
           <a className="flex px-4 cursor-pointer py-3 items-center space-x-3">
           <Image
               width={48}
               height={48}
-              src={`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${chatroom.seller.avatar}/avatar`}
+              src={chatroom.sellerId === user?.id ? `https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${chatroom.buyer.avatar}/avatar` : chatroom.buyerId === user?.id ? `https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${chatroom.seller.avatar}/avatar` : ""}
               className="h-16 w-16 rounded-full bg-slate-500"
               alt="프로필"
             />
             <div>
               <div className="flex items-center">
-                <p className="text-gray-700">{chatroom.seller.nickname}</p>
+                <p className="text-gray-700">{chatroom.sellerId === user?.id ? chatroom.buyer.nickname : chatroom.buyerId === user?.id ? chatroom.seller.nickname : ""}</p>
                 <span className="text-xs text-gray-400 ml-4">
                   {timeForToday(chatroom.messages[0]?.updatedAt)}
                 </span>
