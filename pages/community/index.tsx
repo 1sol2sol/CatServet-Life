@@ -8,6 +8,7 @@ import posts from "pages/api/posts";
 import { timeForToday } from "@libs/client/utils";
 import useCoords from "@libs/client/hooks/useCoords";
 import Loading from "@components/loading";
+import useUser from "@libs/client/hooks/useUser";
 
 
 interface PostsWithUser extends Post {
@@ -24,11 +25,8 @@ interface PostsResponse {
   posts: PostsWithUser[];
 }
 const Community: NextPage = () => {
-  const {latitude, longitude} = useCoords();
-  console.log(latitude,longitude);
-  
-  const {data} = useSWR<PostsResponse>(latitude && longitude ? `/api/posts?latitude=${latitude}&longitude=${longitude}` : null);
-  console.log(data);
+  const {user} = useUser();  
+  const {data} = useSWR<PostsResponse>(user?.latitude && user?.longitude ? `/api/posts?latitude=${user?.latitude}&longitude=${user?.longitude}` : null);  
   
   return (
     <Layout hasTabBar logo >
