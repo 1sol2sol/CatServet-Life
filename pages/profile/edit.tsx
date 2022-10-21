@@ -7,10 +7,13 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import useMutation from "@libs/client/hooks/useMutation";
 import { useRouter } from "next/router";
+import { log } from "console";
+import Image from "next/image";
 
 interface EditProfileForm {
   nickname: string;
   avatar?: FileList;
+  range?: Number;
   formErrors?: string;
 }
 
@@ -24,12 +27,15 @@ const EditProfile: NextPage = () => {
   const { user } = useUser();
   const router = useRouter();
   const { register, watch, setValue, handleSubmit, setError, formState: { errors }, } = useForm<EditProfileForm>();
+  
   useEffect(() => {
     if(user?.nickname) setValue("nickname", user.nickname);
     if(user?.avatar) setAvatarPreview(`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${user?.avatar}/avatar`)
   },[user, setValue])
-  const [editProfile, {data, loading}] = useMutation<EditProfileResponse>(`/api/users/me`, "PUT")
-  const onValid = async ({nickname, avatar}: EditProfileForm) => {
+
+  const [editProfile, {data, loading}] = useMutation<EditProfileResponse>(`/api/users/me`, "PUT");
+
+  const onValid = async ({nickname, avatar, range}: EditProfileForm) => {
     if(loading) return;
     if(avatar && avatar.length > 0 && user){
       const {uploadURL} = await (await fetch(`/api/files`)).json();
@@ -41,10 +47,11 @@ const EditProfile: NextPage = () => {
       })).json();  
       editProfile({
         nickname,
+        range,
         avatarId: id,
       })
     } else {
-      editProfile({nickname})
+      editProfile({nickname, range})
     }
   }
   useEffect(() => {
@@ -70,7 +77,7 @@ const EditProfile: NextPage = () => {
     <Layout canGoBack title="Edit Profile">
       <form onSubmit={handleSubmit(onValid)} className="space-y-4 py-10 px-4">
         <div className="flex items-center space-x-3">
-          {avatarPreview ? <img src={avatarPreview} className="h-14 w-14 rounded-full bg-slate-500" /> : <div className="h-14 w-14 rounded-full bg-slate-500" />}
+          {avatarPreview ? <Image width={56} height={56} alt="프로필" src={avatarPreview} className="h-14 w-14 rounded-full bg-slate-500" /> : <div className="h-14 w-14 rounded-full bg-slate-500" />}
           <label
             htmlFor="picture"
             className="cursor-pointer rounded-md border border-gray-300 py-2 px-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
@@ -97,6 +104,10 @@ const EditProfile: NextPage = () => {
             {errors.formErrors.message}
           </span>
         ) : null}
+        <div>
+        <span className="font-medium text-gray-700 text-sm">동네 설정하기</span>
+        <input className="w-full accent-yellow-800 cursor-pointer ap rounded-lg bg-gray-100 outline-none " {...register("range")} type="range"  min="0.01" max="0.06" step="0.01" />
+        </div>
         <Button text={loading ? "Loading..." : "프로필 업데이트"} />
       </form>
     </Layout>

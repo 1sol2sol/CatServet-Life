@@ -19,8 +19,9 @@ async function handler(
   if(req.method === "PUT"){
     const {
       session: {user},
-      body: {nickname, avatarId}
+      body: {nickname, avatarId, range}
     } = req;
+        
     const currentUser = await client.user.findUnique({
       where: {
         id: user?.id,
@@ -62,6 +63,17 @@ async function handler(
           avatar: avatarId,
         }
       })
+    }
+    if(range && range !== currentUser?.range){
+      await client.user.update({
+        where: {
+          id: user?.id,
+        },
+        data: {
+          range: Number(range),
+        }
+      })
+      res.json({ok: true})
     }
     res.json({ok: true})
   }
