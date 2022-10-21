@@ -9,13 +9,19 @@ async function handler(
 ) {
   if(req.method === "GET"){
     const products = await client.product.findMany({
+      orderBy: {
+        created: "desc",
+      },
+      where: {
+        state: "판매중",
+      },
       include: {
         _count: {
           select: {
             favs: true,
             chatRooms: true,
           }
-        }
+        },
       }
     })
     res.json({ok: true, products})
