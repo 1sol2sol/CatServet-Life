@@ -14,7 +14,7 @@ export default function useUser(){
   
   const router = useRouter();
   useEffect(() => {
-    if(data && !data.ok && router.pathname !== `/enter` && router.pathname !== `/login`){
+    if(data && !data.ok && router.pathname !== `/enter` && router.pathname !== `/enter/login`){
       router.replace("/enter");
     }
     
