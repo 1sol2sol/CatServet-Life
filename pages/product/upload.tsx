@@ -8,6 +8,8 @@ import useMutation from "@libs/client/hooks/useMutation";
 import { useEffect, useState } from "react";
 import { Product } from "@prisma/client";
 import { useRouter } from "next/router";
+import useCoords from "@libs/client/hooks/useCoords";
+import Image from "next/image";
 
 interface UploadProductForm {
   name: string;
@@ -22,6 +24,8 @@ interface UploadProductMutation {
 }
 
 const Upload: NextPage = () => {
+  const {latitude, longitude} = useCoords();
+
   const router = useRouter();
   const { register, handleSubmit, watch } = useForm<UploadProductForm>();
   const [uploadProduct, { loading, data }] = useMutation<UploadProductMutation>(
@@ -35,9 +39,9 @@ const Upload: NextPage = () => {
       const form = new FormData();
       form.append("file", photo[0], name);
       const {result: {id}} = await(await fetch(uploadURL, {method: "POST", body: form})).json();
-      uploadProduct({name, price, description, photoId: id});
+      uploadProduct({name, price, description, photoId: id, latitude, longitude});
     } else {
-      uploadProduct({name, price, description});
+      uploadProduct({name, price, description, latitude, longitude});
     }
   };
   useEffect(() => {
@@ -58,8 +62,11 @@ const Upload: NextPage = () => {
       <form className="space-y-4 p-4" onSubmit={handleSubmit(onValid)}>
         <div>
           {photoPreview ? (
-            <img
+            <Image
               src={photoPreview}
+              width={500}
+              height={500}
+              alt="상품 미리보기"
               className="h-46 w-full rounded-md text-gray-600"
             />
           ) : (
