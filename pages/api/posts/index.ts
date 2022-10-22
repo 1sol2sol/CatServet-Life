@@ -11,6 +11,7 @@ async function handler(
     const {
       body: { question, category, latitude, longitude },
       session: { user },
+      
     } = req;
 
     const post = await client.post.create({
@@ -38,7 +39,7 @@ async function handler(
   }
   if (req.method === "GET") {
     const {
-      query: { latitude, longitude, range },
+      query: { latitude, longitude, range, page },
     } = req;
     
     const parsedLatitude = parseFloat(latitude!.toString());
@@ -78,7 +79,9 @@ async function handler(
           gte: parsedLongitude - parsedRange,
           lte: parsedLongitude + parsedRange,
         }
-      }
+      },
+      take: 15,
+      skip: (Number(page) - 1) * 15
     });
     res.json({
       ok: true,

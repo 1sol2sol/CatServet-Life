@@ -8,12 +8,28 @@ async function handler(
   res: NextApiResponse<ResponseType>
 ) {
   if(req.method === "GET"){
+    const {
+      query: { latitude, longitude, range, page },
+    } = req;
+
+    const parsedLatitude = parseFloat(latitude!.toString());
+    const parsedLongitude = parseFloat(longitude!.toString());
+    const parsedRange = parseFloat(range!.toString());
+
     const products = await client.product.findMany({
       orderBy: {
         created: "desc",
       },
       where: {
         state: "판매중",
+        latitude: {
+          gte: parsedLatitude - parsedRange,
+          lte: parsedLatitude + parsedRange,
+        },
+        longitude: {
+          gte: parsedLongitude - parsedRange,
+          lte: parsedLongitude + parsedRange,
+        }
       },
       include: {
         _count: {
@@ -22,8 +38,10 @@ async function handler(
             chatRooms: true,
           }
         },
-      }
-    })
+      },
+      take: 15,
+      skip: (Number(page) - 1) * 15
+    });
     res.json({ok: true, products})
   }
   if(req.method === "POST"){

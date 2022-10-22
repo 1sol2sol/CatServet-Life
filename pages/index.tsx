@@ -3,9 +3,11 @@ import FloatingButton from '@components/floating-button'
 import Item from '@components/item'
 import Layout from '@components/layout'
 import useUser from '@libs/client/hooks/useUser';
-import useSWR from 'swr';
+import useSWRInfinite from 'swr/infinite'
 import { Product } from '@prisma/client';
 import Loading from '@components/loading';
+import { useInfiniteScroll } from '@libs/client/hooks/useInfiniteScroll';
+import { useEffect } from 'react';
 
 
 export interface ProductWithCount extends Product {
@@ -21,21 +23,41 @@ interface ProductsResponse {
 }
 
 const Home: NextPage = () => {
-  const {data} = useSWR<ProductsResponse>("/api/product");
+  const {user} = useUser();
+  const getKey = (pageIndex: number) => {
+    return `/api/product?latitude=${user?.latitude}&longitude=${user?.longitude}&range=${user?.range}&page=${pageIndex + 1}`;
+  };
+  const {data, setSize} = useSWRInfinite<ProductsResponse>(getKey, {
+    initialSize: 1,
+    revalidateAll: false,
+  });
+  console.log(data);
+  const products = data?.map((i) => i.products).flat();
+  console.log(products);
+  
+  const page = useInfiniteScroll();
+  useEffect(() => {
+    setSize(page);
+  }, [setSize, page]);
   
   return (
     <Layout hasTabBar logo>
       <div className="flex flex-col space-y-5 divide-y">
-      {data ? 
-        data?.products?.map((product) => (
+      {products?.length === 0 ? (
+          <div className="w-full flex justify-center mt-80">
+            <span className="text-yellow-900 font-semibold text-xl">아직 주변의 글이 없어요 😢 😢 </span>
+          </div>
+        ) : ""}
+      {products ? 
+        products?.map((product) => (
           <Item
-            id={product.id}
-            key={product.id}
-            title={product.name}
-            price={product.price}
-            comments={product._count.chatRooms}
-            image={product.image}
-            hearts={product._count.favs}
+            id={product?.id}
+            key={product?.id}
+            title={product?.name}
+            price={product?.price}
+            comments={product?._count.chatRooms}
+            image={product?.image}
+            hearts={product?._count.favs}
           />
         ))
       : (
