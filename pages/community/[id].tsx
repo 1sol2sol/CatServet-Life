@@ -9,6 +9,7 @@ import useMutation from "@libs/client/hooks/useMutation";
 import { cls, timeForToday } from "@libs/client/utils";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
+import Image from "next/image";
 
 interface AnswerWithUser extends Answer {
   user: User;
@@ -42,13 +43,14 @@ interface AnswerResponse{
 
 const CommunityPostDetail: NextPage = () => {
   const router = useRouter();
+  const { data: userData } = useSWR(`/api/users/me`);
   const {register, handleSubmit, reset} = useForm<AnswerForm>();
   const { data, mutate } = useSWR<CommunityPostResponse>(
     router.query.id ? `/api/posts/${router.query.id}` : null
-  );
-  console.log(data);
-  
+  );  
   const [wonder, {loading}] = useMutation(`/api/posts/${router.query.id}/wonder`, "POST");
+  const [delPost] = useMutation(`/api/posts/${router.query.id}`, "DELETE")
+  const [delAnswer, {data: delAnswerData}] = useMutation(`/api/posts/${router.query.id}/answers`, "DELETE")
   const [sendAnswer, {data: answerData, loading: answerLoading}] = useMutation<AnswerResponse>(`/api/posts/${router.query.id}/answers`, "POST")
   const onWonderClick = () => {
     if(!data) return;
@@ -67,6 +69,11 @@ const CommunityPostDetail: NextPage = () => {
       wonder({})
     }
   };
+  const onDelClick = () => {
+    delPost({})
+    router.replace("/community");
+  }
+
   const onValid = (form: AnswerForm) => {
     if(answerLoading) return;
     sendAnswer(form);
@@ -77,6 +84,12 @@ const CommunityPostDetail: NextPage = () => {
       mutate();
     }
   },[answerData,reset,mutate])
+
+  useEffect(() => {
+    if(delAnswerData && delAnswerData.ok){
+      mutate();
+    }
+  },[delAnswerData, mutate])
   return (
     <Layout canGoBack hasTabBar>
       <div>
@@ -84,16 +97,26 @@ const CommunityPostDetail: NextPage = () => {
           {data?.post?.categories.name}
         </span>
         <div className="mb-3 flex cursor-pointer items-center space-x-3  border-b px-4 pb-3">
-          <div className="h-10 w-10 rounded-full bg-slate-300" />
-          <div>
+          <Image src={`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${data?.post?.user?.avatar}/avatar`} width={40} height={40} alt="프로필" className="h-10 w-10 rounded-full bg-slate-300" />
+          <div className="w-full">
             <p className="text-sm font-medium text-gray-700">
               {data?.post?.user?.nickname}
             </p>
+            <div className="flex items-center justify-between ">
             <Link href={`/users/profiles/${data?.post?.user?.id}`}>
               <a className="text-xs font-medium text-gray-500">
-                View profile &rarr;
+                View profile 
               </a>
             </Link>
+            {userData?.profile?.id === data?.post?.userId ? (
+            <button
+             onClick={onDelClick}
+              className="bg-gray-50 border border-gray-300  text-gray-900 text-xs rounded-lg focus:ring-yellow-800 focus:border-yellow-800 block px-2 h-7"
+            >
+              삭제
+            </button>
+          ) : null}
+            </div>
           </div>
         </div>
         <div>
@@ -144,14 +167,17 @@ const CommunityPostDetail: NextPage = () => {
         <div className="my-5 space-y-5 px-4">
           {data?.post?.answers?.map((answer) => (
             <div key={answer.id} className="flex items-start space-x-3">
-              <div className="h-8 w-8 rounded-full bg-slate-200" />
-              <div>
+              <Image src={`https://imagedelivery.net/omEdHMoJ0gXM7Ip-5lbEIQ/${answer?.user?.avatar}/avatar`} width={35} height={35} alt="프로필" className="h-8 w-8 rounded-full bg-slate-200" />
+              <div className="w-full">
                 <span className="block text-sm font-medium text-gray-700">
                   {answer.user.nickname}
                 </span>
+                <div className="flex items-center justify-between w-full">
                 <span className="block text-xs text-gray-500 ">
                   {timeForToday(answer.created)}
                 </span>
+                <button onClick={() => {delAnswer(answer.id)}} className="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-yellow-800 focus:border-yellow-800 block px-2 h-7">삭제</button>
+                </div>
                 <p className="mt-2 text-gray-700">{answer.answer}</p>
               </div>
             </div>

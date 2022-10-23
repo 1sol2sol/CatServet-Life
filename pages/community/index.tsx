@@ -35,11 +35,11 @@ const Community: NextPage = () => {
   };
   const {data, setSize} = useSWRInfinite<PostsResponse>(getKey, {
     initialSize: 1,
+    refreshInterval: 10,
     revalidateAll: false,
   });
-  console.log(data);
+  
   const posts = data?.map((i) => i.posts).flat();
-  console.log(posts);
   
   const page = useInfiniteScroll();
   useEffect(() => {

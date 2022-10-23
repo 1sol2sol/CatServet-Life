@@ -13,69 +13,78 @@ async function handler(
     session: {user},
   } = req;
 
-  const post = await client.post.findUnique({
-    where: {
-      id: Number(id),
-    },
-    include: {
-      categories: {
-        select: {
-          name: true,
-        },
+  if(req.method === "GET"){
+    const post = await client.post.findUnique({
+      where: {
+        id: Number(id),
       },
-      user: {
-        select: {
-          id: true,
-          nickname: true,
-          avatar: true,
+      include: {
+        categories: {
+          select: {
+            name: true,
+          },
         },
-      },
-      answers: {
-        select: {
-          answer: true,
-          id: true,
-          created: true,
-          user: {
-            select: {
-              id: true,
-              nickname: true,
-              avatar: true,
+        user: {
+          select: {
+            id: true,
+            nickname: true,
+            avatar: true,
+          },
+        },
+        answers: {
+          select: {
+            answer: true,
+            id: true,
+            created: true,
+            user: {
+              select: {
+                id: true,
+                nickname: true,
+                avatar: true,
+              }
             }
           }
-        }
-      },
-      _count: {
-        select: {
-          answers: true,
-          wonderings: true,
+        },
+        _count: {
+          select: {
+            answers: true,
+            wonderings: true,
+          },
         },
       },
-    },
-  });
-
-
-  const isWondering = Boolean(
-    await client.wondering.findFirst({
+    });
+  
+    const isWondering = Boolean(
+      await client.wondering.findFirst({
+        where: {
+          postId: Number(id),
+          userId: user?.id,
+        },
+        select: {
+          id: true,
+        }
+      })
+    )
+  
+    res.json({
+      ok: true,
+      post,
+      isWondering
+    });
+  }
+  
+  if(req.method === "DELETE") {
+    const post = await client.post.delete({
       where: {
-        postId: Number(id),
-        userId: user?.id,
-      },
-      select: {
-        id: true,
+        id: Number(id),
       }
     })
-  )
-
-  res.json({
-    ok: true,
-    post,
-    isWondering
-  });
+  }
 }
 
 export default withApiSession(
   withHandler({
-    methods: ["GET"],
+    methods: ["GET", "DELETE"],
     handler,
   })
 );

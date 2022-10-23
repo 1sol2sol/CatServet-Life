@@ -22,8 +22,8 @@ async function handler(
     }
   })
 
-  // 댓글 생선전 post 존재하는지 확인 여부 코드 추가 필요 !
-
+  if(req.method === "POST") {
+     // 댓글 생선전 post 존재하는지 확인 여부 코드 추가 필요 !
   const newAnswer = await client.answer.create({
     data: {
       user: {
@@ -38,18 +38,29 @@ async function handler(
       },
       answer,
     }
-  })
-  console.log(newAnswer);
-  
+  })  
   res.json({
     ok: true,
     answer: newAnswer,
   });
+  }
+
+  if(req.method === "DELETE") {
+    const {body} = req;
+    console.log(body);
+    
+    const answer = await client.answer.delete({
+      where: {
+        id: Number(body),
+      }
+    })
+    res.json({ok: true})  
+  }
 }
 
 export default withApiSession(
   withHandler({
-    methods: ["POST"],
+    methods: ["POST", "DELETE"],
     handler,
   })
 );
