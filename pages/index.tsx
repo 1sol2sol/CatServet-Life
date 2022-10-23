@@ -41,7 +41,7 @@ const Home: NextPage = () => {
   }, [setSize, page]);
   
   return (
-    <Layout hasTabBar logo>
+    <Layout seoTitle='Home' hasTabBar logo>
       <div className="flex flex-col space-y-5 divide-y">
       {products?.length === 0 ? (
           <div className="w-full flex justify-center mt-80">
@@ -54,6 +54,7 @@ const Home: NextPage = () => {
             id={product?.id}
             key={product?.id}
             title={product?.name}
+            time={product?.created}
             price={product?.price}
             comments={product?._count.chatRooms}
             image={product?.image}

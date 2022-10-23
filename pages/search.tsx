@@ -104,6 +104,7 @@ const Search: NextPage = () => {
             price={result.price}
             comments={result._count.chatRooms}
             hearts={result._count.favs}
+            time={result.created}
             image={result.image}
           />
         )) : ""}
