@@ -119,7 +119,7 @@ const ItemDetail: NextPage = () => {
             <div>
               {user?.id === data?.product?.user?.id ? (
                 <div className="mt-5 flex w-36 space-x-2">
-                  <select onChange={handleChange} value={state} className="block w-full appearance-none rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-yellow-800 focus:ring-yellow-800 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-yellow-800 dark:focus:ring-yellow-800">
+                  <select onChange={handleChange} value={state} className="block w-full appearance-none rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-yellow-800 focus:ring-yellow-800">
                     <option value={"판매중"}>판매중</option>
                     <option value={"판매완료"}>판매완료</option>
                   </select>
