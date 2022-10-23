@@ -10,6 +10,7 @@ import { Product } from "@prisma/client";
 import { useRouter } from "next/router";
 import useCoords from "@libs/client/hooks/useCoords";
 import Image from "next/image";
+import useUser from "@libs/client/hooks/useUser";
 
 interface UploadProductForm {
   name: string;
@@ -24,7 +25,9 @@ interface UploadProductMutation {
 }
 
 const Upload: NextPage = () => {
-  const {latitude, longitude} = useCoords();
+  const {user} = useUser();
+  const latitude = user?.latitude;
+  const longitude = user?.longitude;
 
   const router = useRouter();
   const { register, handleSubmit, watch } = useForm<UploadProductForm>();
