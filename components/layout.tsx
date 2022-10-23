@@ -4,6 +4,7 @@ import { cls } from "@libs/client/utils";
 import { useRouter } from "next/router";
 import Input from "./input";
 import Image from "next/image";
+import Head from "next/head";
 
 interface LayoutProps {
   title?: string;
@@ -11,6 +12,7 @@ interface LayoutProps {
   canGoBack?: boolean;
   hasTabBar?: boolean;
   children: React.ReactNode;
+  seoTitle: string;
 }
 
 export default function Layout({
@@ -19,6 +21,7 @@ export default function Layout({
   canGoBack,
   hasTabBar,
   children,
+  seoTitle,
 }: LayoutProps) {
   const router = useRouter();
 
@@ -34,6 +37,9 @@ export default function Layout({
   }
   return (
     <div>
+      <Head>
+        <title>{seoTitle} | 집사생활</title>
+      </Head>
       <div className="fixed top-0 flex h-12 w-full max-w-xl items-center justify-center  border-b bg-white px-5 text-lg  font-medium text-yellow-900">
         {canGoBack && !title ? (
           <div className="flex w-full space-x-2">
@@ -166,18 +172,19 @@ export default function Layout({
               <span>커뮤니티</span>
             </a>
           </Link>
-          <Link href="/hospital">
+          <Link href="/gallery">
             <a
               className={cls(
                 "flex flex-col items-center space-y-2 ",
-                router.pathname === "/live"
+                router.pathname === "/gallery"
                   ? "text-yellow-800"
                   : "transition-colors hover:text-gray-500"
               )}
             >
               {" "}
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-              <span>내 근처</span>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>              
+              <span>갤러리</span>
+                
             </a>
           </Link>
           <Link href="/chats">

@@ -1,3 +1,4 @@
+import { timeForToday } from "@libs/client/utils";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -8,6 +9,7 @@ interface ItemProps {
   image: string;
   comments: number;
   hearts: number;
+  time: any;
 }
 
 export default function Item({
@@ -17,6 +19,7 @@ export default function Item({
   hearts,
   id,
   image,
+  time
 }: ItemProps) {
   return (
     <Link href={`/product/${id}`}>
@@ -28,10 +31,12 @@ export default function Item({
               layout="fill"
               objectFit="cover"
               alt="상품 이미지"
+              className="w-20 h-20 bg-gray-400 rounded-md"
             />
           </div>
           <div className="flex flex-col pt-2">
             <h3 className="text-sm font-medium text-gray-900">{title}</h3>
+            <span className="mt-1 text-xs font-medium text-gray-900">{timeForToday(time)}</span>
             <span className="mt-1 font-medium text-gray-900">₩{price}</span>
           </div>
         </div>

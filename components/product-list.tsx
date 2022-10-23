@@ -23,9 +23,11 @@ export default function ProudctList({kind}: ProductListProps){
     <Item
       id={record.product.id}
       key={record.id}
+      image={record.product.image}
       title={record.product.name}
       price={record.product.price}
-      comments={1}
+      time={record.product.created}
+      comments={record.product._count.chatRooms}
       hearts={record.product._count.favs}
     />
   ))}
