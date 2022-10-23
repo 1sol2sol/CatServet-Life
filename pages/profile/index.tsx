@@ -58,11 +58,11 @@ const Profile: NextPage = () => {
 
   const onValid = () => {
     if (loading) return;
-    logout("");
+    logout({});
   };
   useEffect(() => {
     if (logoutData?.ok) {
-      router.replace("/enter/login");
+      router.replace("/enter");
     }
   }, [logoutData, router]);
 
@@ -214,6 +214,7 @@ const Profile: NextPage = () => {
                       price={product?.price}
                       image={product?.image ? product.image : null}
                       hearts={product?._count.favs}
+                      time={product?.created}
                       comments={product?._count.chatRooms}
                     />
                   </div>
