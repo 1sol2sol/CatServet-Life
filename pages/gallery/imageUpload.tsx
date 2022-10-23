@@ -55,7 +55,7 @@ const ImageUpload: NextPage = () => {
     <Layout canGoBack>
       <form className="space-y-4 p-4" onSubmit={handleSubmit(onValid)}>
         <div>
-          <h3 className="flex justify-center font-bold text-yellow-900 text-xl pb-3">우리집 고양이 귀여운건 나만 알 수 없지! 🐱🐱</h3>
+          <h3 className="flex justify-center font-semibold text-yellow-900 text-xl pb-4">Mine is the cutest 🐱🐱</h3>
           {photoPreview ? (
             <Image
               src={photoPreview}
