@@ -67,7 +67,7 @@ const Profile: NextPage = () => {
   }, [logoutData, router]);
 
   return (
-    <Layout hasTabBar title="나의 프로필">
+    <Layout seoTitle="프로필" hasTabBar title="나의 프로필">
       <div className="px-4">
         <div className="mt-4 flex items-center justify-between space-x-3">
           <div className="flex items-center">
@@ -219,7 +219,7 @@ const Profile: NextPage = () => {
                     />
                   </div>
                 ))
-              : null}
+              : <p className="text-yellow-900 text-center ">아직 내역이 없어요 😢 😢</p> }
           </div>
           <div
             onClick={() => {
@@ -300,7 +300,7 @@ const Profile: NextPage = () => {
                     </Link>
                   </div>
                 ))
-              : null}
+              : <p className="text-yellow-900 text-center ">아직 내역이 없어요 😢 😢</p>}
           </div>
         </div>
         <div className="pl-2 pt-6 pb-6">

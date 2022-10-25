@@ -35,7 +35,7 @@ const Gallerys: NextPage = () => {
   );
 
   return (
-    <Layout title="갤러리" hasTabBar>
+    <Layout seoTitle="갤러리" title="갤러리" hasTabBar>
       <div className="flex justify-center py-5">
         <span className="font-bold text-yellow-900 text-lg">Vote for the cutest Cat 😽  </span>
       </div>

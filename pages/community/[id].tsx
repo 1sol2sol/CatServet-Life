@@ -91,7 +91,7 @@ const CommunityPostDetail: NextPage = () => {
     }
   },[delAnswerData, mutate])
   return (
-    <Layout canGoBack hasTabBar>
+    <Layout seoTitle="게시글 상세보기" canGoBack hasTabBar>
       <div>
         <span className="my-3 ml-4 inline-flex items-center rounded-full bg-yellow-700 px-2.5 py-0.5 text-xs font-medium text-white">
           {data?.post?.categories.name}

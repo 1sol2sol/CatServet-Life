@@ -38,7 +38,7 @@ const Community: NextPage = () => {
     refreshInterval: 10,
     revalidateAll: false,
   });
-  
+
   const posts = data?.map((i) => i.posts).flat();
   
   const page = useInfiniteScroll();
@@ -47,7 +47,7 @@ const Community: NextPage = () => {
   }, [setSize, page]);
   
   return (
-    <Layout hasTabBar logo >
+    <Layout seoTitle="커뮤니티" hasTabBar logo >
       <div className="space-y-4 divide-y-[2px]">
         {posts?.length === 0 ? (
           <div className="w-full flex justify-center mt-80">

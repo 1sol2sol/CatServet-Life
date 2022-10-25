@@ -4,6 +4,7 @@ import useUser from "@libs/client/hooks/useUser";
 import { timeForToday } from "@libs/client/utils";
 import { Category, Post, Product, User } from "@prisma/client";
 import type { NextPage } from "next";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -56,6 +57,9 @@ const Search: NextPage = () => {
 
   return (
     <div className="px-4">
+      <Head>
+        <title>검색 | 집사생활</title>
+      </Head>
       <div className="top-0 flex items-center justify-between">
         <button onClick={onClick} className=" cursor-pointer">
           <svg

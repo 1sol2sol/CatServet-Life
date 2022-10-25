@@ -52,7 +52,7 @@ const ImageUpload: NextPage = () => {
     }
   }, [photo]);
   return (
-    <Layout canGoBack>
+    <Layout seoTitle="이미지업로드" canGoBack>
       <form className="space-y-4 p-4" onSubmit={handleSubmit(onValid)}>
         <div>
           <h3 className="flex justify-center font-semibold text-yellow-900 text-xl pb-4">Mine is the cutest 🐱🐱</h3>

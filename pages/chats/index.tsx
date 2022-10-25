@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Link from "next/link";
 import Layout from "@components/layout";
+import Loading from '@components/loading';
 import useSWR from "swr";
 import { timeForToday } from "@libs/client/utils";
 import { ChatRoom, Messages, User } from "@prisma/client";
@@ -25,9 +26,9 @@ const Chats: NextPage = () => {
   const {user} = useUser();
   
   return (
-    <Layout hasTabBar title="채팅">
+    <Layout seoTitle="채팅목록" hasTabBar title="채팅">
       <div className="divide-y-[1px] ">
-        {data?.chatRooms?.map((chatroom: any) =>  ( 
+        {data ? data?.chatRooms?.map((chatroom: any) =>  ( 
           <Link href={`/chats/${chatroom.id}`} key={chatroom.id}>
           <a className="flex px-4 cursor-pointer py-3 items-center space-x-3">
           <Image
@@ -50,7 +51,7 @@ const Chats: NextPage = () => {
             </div>
           </a>
         </Link>
-      ))}
+      )) : <Loading/>}
     </div>
   </Layout>
 );

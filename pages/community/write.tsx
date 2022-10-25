@@ -37,7 +37,7 @@ const Write: NextPage = () => {
     }
   },[data, router])
   return (
-    <Layout canGoBack>
+    <Layout seoTitle="게시글작성" canGoBack>
       <form onSubmit={handleSubmit(onValid)} className="space-y-4 p-4">
         <select
           {...register("category", {required: true})}
