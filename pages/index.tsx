@@ -1,14 +1,13 @@
-import type { NextPage } from 'next'
-import FloatingButton from '@components/floating-button'
-import Item from '@components/item'
-import Layout from '@components/layout'
-import useUser from '@libs/client/hooks/useUser';
-import useSWRInfinite from 'swr/infinite'
-import { Product } from '@prisma/client';
-import Loading from '@components/loading';
-import { useInfiniteScroll } from '@libs/client/hooks/useInfiniteScroll';
-import { useEffect } from 'react';
-
+import type { NextPage } from "next";
+import FloatingButton from "@components/floating-button";
+import Item from "@components/item";
+import Layout from "@components/layout";
+import useUser from "@libs/client/hooks/useUser";
+import useSWRInfinite from "swr/infinite";
+import { Product } from "@prisma/client";
+import Loading from "@components/loading";
+import { useInfiniteScroll } from "@libs/client/hooks/useInfiniteScroll";
+import { useEffect } from "react";
 
 export interface ProductWithCount extends Product {
   _count: {
@@ -23,47 +22,51 @@ interface ProductsResponse {
 }
 
 const Home: NextPage = () => {
-  const {user} = useUser();
+  const { user } = useUser();
   const getKey = (pageIndex: number) => {
-    return `/api/product?latitude=${user?.latitude}&longitude=${user?.longitude}&range=${user?.range}&page=${pageIndex + 1}`;
+    return `/api/product?latitude=${user?.latitude}&longitude=${
+      user?.longitude
+    }&range=${user?.range}&page=${pageIndex + 1}`;
   };
-  const {data, setSize} = useSWRInfinite<ProductsResponse>(getKey, {
+  const { data, setSize } = useSWRInfinite<ProductsResponse>(getKey, {
     initialSize: 1,
     revalidateAll: false,
   });
-  console.log(data);
   const products = data?.map((i) => i.products).flat();
-  console.log(products);
-  
+
   const page = useInfiniteScroll();
   useEffect(() => {
     setSize(page);
   }, [setSize, page]);
-  
+
   return (
-    <Layout seoTitle='Home' hasTabBar logo>
+    <Layout seoTitle="Home" hasTabBar logo>
       <div className="flex flex-col space-y-5 divide-y">
-      {products?.length === 0 ? (
-          <div className="w-full flex justify-center mt-80">
-            <span className="text-yellow-900 font-semibold text-xl">아직 주변의 글이 없어요 😢 😢 </span>
+        {products?.length === 0 ? (
+          <div className="mt-80 flex w-full justify-center">
+            <span className="text-xl font-semibold text-yellow-900">
+              아직 주변의 글이 없어요 😢 😢{" "}
+            </span>
           </div>
-        ) : ""}
-      {products ? 
-        products?.map((product) => (
-          <Item
-            id={product?.id}
-            key={product?.id}
-            title={product?.name}
-            time={product?.created}
-            price={product?.price}
-            comments={product?._count.chatRooms}
-            image={product?.image}
-            hearts={product?._count.favs}
-          />
-        ))
-      : (
-        <Loading/>
-      )}
+        ) : (
+          ""
+        )}
+        {products ? (
+          products?.map((product) => (
+            <Item
+              id={product?.id}
+              key={product?.id}
+              title={product?.name}
+              time={product?.created}
+              price={product?.price}
+              comments={product?._count.chatRooms}
+              image={product?.image}
+              hearts={product?._count.favs}
+            />
+          ))
+        ) : (
+          <Loading />
+        )}
         <FloatingButton href="/product/upload">
           <svg
             className="h-6 w-6"
@@ -85,5 +88,6 @@ const Home: NextPage = () => {
     </Layout>
   );
 };
-export default Home;
 
+
+export default Home;
