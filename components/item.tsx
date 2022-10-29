@@ -35,7 +35,7 @@ export default function Item({
             />
           </div>
           <div className="flex flex-col pt-2">
-            <h3 className="text-sm font-medium text-gray-900">{title}</h3>
+            <h3 className=" font-medium text-gray-900">{title}</h3>
             <span className="mt-1 text-xs font-medium text-gray-900">{timeForToday(time)}</span>
             <span className="mt-1 font-medium text-gray-900">₩{price}</span>
           </div>
