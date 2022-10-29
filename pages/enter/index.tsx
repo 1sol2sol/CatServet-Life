@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import enterLogo from "../public/cat-enter-logo.png"
 
 const Enter: NextPage = () => {
   const router = useRouter();
@@ -11,7 +10,7 @@ const Enter: NextPage = () => {
   return (
     <div className="px-4 pt-44">
       <div className="flex flex-col items-center justify-center">
-        <Image width={200} height={200} src={enterLogo} alt="logo" quality={100} />
+        <Image width={200} height={200} src="/cat-enter-logo.png" alt="logo" quality={100} />
         <div className="mt-3 mb-40 flex flex-col items-center justify-center">
           <p className="text-center text-yellow-900 font-semibold  text-lg">
             내 주변의 집사들과
