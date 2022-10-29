@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import useCoords from "@libs/client/hooks/useCoords";
 
 interface LoginForm {
-  phone: string;
+  email: string;
 }
 interface LoginMutationResult {
   ok: boolean;
@@ -52,7 +52,7 @@ const Login: NextPage = () => {
   return (
     <div className="mt-32 px-4">
       <h3 className="text-center text-2xl font-semibold text-yellow-900">
-        핸드폰 번호로 로그인해주세요.
+        이메일 주소로 로그인해주세요.
       </h3>
       <div className="mt-10">
         {data?.ok ? (
@@ -76,38 +76,17 @@ const Login: NextPage = () => {
               className="mt-8 flex flex-col space-y-4"
             >
               <Input
-                register={register("phone")}
-                name="phone"
-                label="Phone number"
-                type="number"
-                kind="phone"
+                register={register("email")}
+                name="email"
+                label="Email Address"
+                type="email"
                 required
               />
               <Button text={loading ? "Loading..." : "인증번호 받기"} />
             </form>
           </>
         )}
-        <div className="mt-8">
-          <div className="relative">
-            <div className="absolute w-full border-t border-gray-300" />
-            <div className="relative -top-3 text-center ">
-              <span className="bg-white px-2 text-sm text-gray-500">
-                Or with
-              </span>
-            </div>
-          </div>
-          <div className="mt-2 ">
-            <button className="flex w-full items-center justify-center space-x-2 rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-500 shadow-sm hover:bg-gray-50">
-              <Image
-                src="/kakao-logo.svg"
-                width={20}
-                height={20}
-                alt="kakaoLogo"
-              />
-              <span className="text-sm">카카오로 로그인하기</span>
-            </button>
-          </div>
-        </div>
+
       </div>
     </div>
   );
