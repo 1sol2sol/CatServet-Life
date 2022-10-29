@@ -27,9 +27,9 @@ const Review: NextPage = () => {
       router.push("/");
     }
   }, [data, router]);
-  
+
   return (
-    <Layout title="리뷰 작성" hasTabBar>
+    <Layout seoTitle="리뷰작성" title="리뷰 작성" hasTabBar>
       <div className="mx-4 flex flex-col md:mx-auto md:max-w-2xl ">
         <h1 className="mt-[20vh] mb-8 text-center font-semibold text-yellow-900">
           💌 구매자에게 후기를 보내주세요.
