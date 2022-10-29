@@ -5,7 +5,7 @@ export function middleware(req: NextRequest, ev:NextFetchEvent){
   
   if(!req.url.includes("/api")){
     if(!req.url.includes("/enter") && !req.cookies.get("catservantsession")){
-      return NextResponse.redirect(new URL("/enter", req.url))
+      return NextResponse.redirect(new URL("/enter/login", req.url))
     }
   }
 }
