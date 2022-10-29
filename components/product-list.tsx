@@ -19,6 +19,7 @@ export default function ProudctList({kind}: ProductListProps){
   const {data} = useSWR<ProductListResponse>(`/api/users/me/${kind}`);
   return data ? 
   <>
+  {data[kind].length === 0 ? <p className="text-yellow-900 text-lg font-semibold text-center pt-72">아직 내역이 없어요 😢 😢</p> : ""}
   {data[kind]?.map((record) => (
     <Item
       id={record.product.id}
