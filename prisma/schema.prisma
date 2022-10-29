@@ -1,9 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
+  previewFeatures = ["referentialIntegrity", "fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -13,14 +10,31 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  phone     String   @unique
-  email     String?  @unique
-  nickname  String
-  avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tokens    Token[]
+  id              Int         @id @default(autoincrement())
+  phone           String?     @unique
+  email           String      @unique
+  nickname        String      @unique
+  avatar          String?
+  latitude        Float?
+  longitude       Float?
+  range           Float?      @default(0.02)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  tokens          Token[]
+  products        Product[]
+  favs            Fav[]
+  posts           Post[]
+  answers         Answer[]
+  wonderings      Wondering[]
+  writtenReviews  Review[]    @relation(name: "writtenReviews")
+  receivedReviews Review[]    @relation(name: "receivedReviews")
+  sales           Sale[]
+  purchases       Purchase[]
+  sendMessages    ChatRoom[]  @relation(name: "sendMessages")
+  receiveMessages ChatRoom[]  @relation(name: "receiveMessages")
+  messages        Messages[]
+  gallerys        Gallery[]
+  scores          Score[]
 }
 
 model Token {
@@ -30,4 +44,198 @@ model Token {
   userId  Int
   created DateTime @default(now())
   updated DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  created     DateTime   @default(now())
+  updated     DateTime   @updatedAt
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  image       String
+  name        String
+  price       Int
+  latitude    Float?
+  longitude   Float?
+  description String     @db.MediumText
+  state       String     @default("판매중")
+  favs        Fav[]
+  Sale        Sale[]
+  Purchase    Purchase[]
+  chatRooms   ChatRoom[]
+  reviews     Review[]
+
+  @@index([userId])
+  @@fulltext([name])
+}
+
+model Post {
+  id         Int         @id @default(autoincrement())
+  created    DateTime    @default(now())
+  updated    DateTime    @updatedAt
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  image      String?
+  question   String      @db.MediumText
+  latitude   Float?
+  longitude  Float?
+  categories Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  answers    Answer[]
+  wonderings Wondering[]
+  categoryId Int
+
+  @@index([userId])
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+  posts Post[]
+}
+
+model Answer {
+  id      Int      @id @default(autoincrement())
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+  answer  String   @db.MediumText
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
+  post    Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  Int
+
+  @@index([userId])
+  @@index([postId])
+}
+
+model Wondering {
+  id      Int      @id @default(autoincrement())
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
+  post    Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  Int
+
+  @@index([userId])
+  @@index([postId])
+}
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  review       String   @db.MediumText
+  createdBy    User     @relation(name: "writtenReviews", fields: [createdById], references: [id], onDelete: Cascade)
+  createdById  Int
+  createdFor   User     @relation(name: "receivedReviews", fields: [createdForId], references: [id], onDelete: Cascade)
+  createdForId Int
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    Int
+
+  @@index([createdById])
+  @@index([createdForId])
+  @@index([productId])
+}
+
+model Sale {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  favs      Fav?     @relation(fields: [favId], references: [id], onDelete: Cascade)
+  favId     Int?
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model Purchase {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  favs      Fav?     @relation(fields: [favId], references: [id], onDelete: Cascade)
+  favId     Int?
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model Fav {
+  id        Int        @id @default(autoincrement())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  created   DateTime   @default(now())
+  updated   DateTime   @updatedAt
+  sales     Sale[]
+  purchases Purchase[]
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model ChatRoom {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  buyer     User       @relation(name: "sendMessages", fields: [buyerId], references: [id], onDelete: Cascade)
+  buyerId   Int
+  seller    User       @relation(name: "receiveMessages", fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId  Int
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  messages  Messages[]
+
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([productId])
+}
+
+model Messages {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  chatRoomId Int
+  message    String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+
+  @@index([userId])
+  @@index([chatRoomId])
+}
+
+model Gallery {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  scores    Score[]
+  image     String
+
+  @@index([userId])
+}
+
+model Score {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  gallery   Gallery  @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  galleryId Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  @@index([userId])
+  @@index([galleryId])
 }
